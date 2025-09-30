@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="./media/fav.png" type="image/x-icon" />
+    <title>AutoNotes - Smart Media Summary Generator</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Quicksand:wght@300..700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <nav
+      class="nav-container"
+      style="width: 100vw; display: flex; justify-content: space-evenly"
+    >
+      <div class="logo">AutoNotes</div>
+      <div class="nav-links">
+        <a href="./recent.html">Recent</a>
+        <a href="#about">About</a>
+        <a href="./login.html" class="cta-nav">Login</a>
+      </div>
+    </nav>
+
+    <main class="main-container">
+      <h1 class="hero-heading">
+        Transform YouTube Videos & Media Files into<br />Concise Summaries/Notes
+      </h1>
+
+      <div class="input-container">
+        <div class="toggle-container">
+          <label class="toggle">
+            <input
+              type="radio"
+              name="input-type"
+              value="youtube"
+              checked
+              id="youtubeToggle"
+            />
+            <span class="toggle-label">YouTube URL</span>
+          </label>
+          <label class="toggle">
+            <input
+              type="radio"
+              name="input-type"
+              value="local"
+              id="localFileToggle"
+            />
+            <span class="toggle-label">Local Media</span>
+          </label>
+        </div>
+
+        <form>
+          <div id="youtubeInputSection">
+            <input
+              type="url"
+              class="url-input"
+              placeholder="Paste YouTube URL here..."
+              id="videoUrl"
+            />
+          </div>
+
+          <div id="localFileSection" style="display: none">
+            <input
+              type="file"
+              class="file-input"
+              id="localMediaFile"
+              accept="video/*,audio/*"
+            />
+          </div>
+
+          <button class="analyze-btn">
+            <i class="fas fa-magic"></i> Generate Summary
+          </button>
+        </form>
+      </div>
+
+      <!-- dynamic loading of the summary -->
+      <div class="results-container" id="dynamicResults"></div>
+      <!-- ------------------------------------------>
+
+      <div class="features">
+        <div class="features-grid">
+          <div class="feature-card">
+            <i class="fas fa-robot feature-icon"></i>
+            <h3>AI-Powered Analysis</h3>
+            <p>Advanced NLP extracts key points and concepts with accuracy</p>
+          </div>
+          <div class="feature-card">
+            <i class="fas fa-clock feature-icon"></i>
+            <h3>Smart Timestamps</h3>
+            <p>Automatically identify and highlight crucial moments</p>
+          </div>
+          <div class="feature-card">
+            <i class="fas fa-file-export feature-icon"></i>
+            <h3>Export Formats</h3>
+            <p>Download summaries as Markdown or plain text</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="results-section">
+        <!-- <h2>Example Summary Output</h2> -->
+        <div class="summary-box">
+        
+          </p> -->
+        </div>
+      </div>
+    </main>
+
+    <script src="./script.js"></script>
+    <script>
+      // Toggle between YouTube URL and local file input
+      document
+        .getElementById("youtubeToggle")
+        .addEventListener("change", function () {
+          document.getElementById("youtubeInputSection").style.display =
+            "block";
+          document.getElementById("localFileSection").style.display = "none";
+        });
+
+      document
+        .getElementById("localFileToggle")
+        .addEventListener("change", function () {
+          document.getElementById("youtubeInputSection").style.display = "none";
+          document.getElementById("localFileSection").style.display = "block";
+        });
+    </script>
+  </body>
+</html>
