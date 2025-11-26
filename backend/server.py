@@ -77,17 +77,58 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
 
+@app.route("/videoInfo", methods=["GET"])
+def videoInfo():
+    """Get YouTube video information"""
+    try:
+        video_id = request.args.get("video_id")
+        if not video_id:
+            return jsonify({"error": "video_id parameter required"}), 400
+
+        # Simple endpoint - just return success, frontend will use video_id
+        return jsonify({"video_id": video_id, "status": "ok"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/youtubeSummary", methods=["POST"])
 def youtubeSummary():
     """Process YouTube video and generate summary"""
-    data = request.get_json()
-    video_id = data.get("video_id")
-    transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
-    print("Successfully Fetched transcript")
-    print("Loading/Processing Transcript(Llama Model...)")
-    generatedSummary = summaryGenerationModel(transcript_list)
-    print("Successfully generated summary")
-    return jsonify({"transcript": generatedSummary}), 200
+    try:
+        data = request.get_json()
+        video_id = data.get("video_id")
+
+        if not video_id:
+            return jsonify({"error": "video_id is required"}), 400
+
+        print(f"Fetching transcript for video: {video_id}")
+
+        # Try to get transcript in any available language
+        try:
+            # Use the new API (v1.2+)
+            api = YouTubeTranscriptApi()
+            transcript_list = api.fetch(video_id)
+            print(f"Successfully fetched transcript")
+        except Exception as e:
+            print(f"Transcript fetch error: {str(e)}")
+            return (
+                jsonify(
+                    {
+                        "error": f"Could not fetch transcript. This may be due to: 1) Video has no captions/subtitles, 2) Network connectivity issues, 3) YouTube API rate limiting. Error: {str(e)}"
+                    }
+                ),
+                400,
+            )
+
+        print("Successfully Fetched transcript")
+        print("Loading/Processing Transcript(Llama Model...)")
+        generatedSummary = summaryGenerationModel(transcript_list)
+        print("Successfully generated summary")
+        return jsonify({"transcript": generatedSummary}), 200
+
+    except Exception as e:
+        print(f"Error in youtubeSummary: {str(e)}")
+        return jsonify({"error": f"Failed to process video: {str(e)}"}), 500
 
 
 @app.route("/localMediaSummary", methods=["POST"])

@@ -4,16 +4,19 @@
 
 Feat: No API keys needed.
 
+|Service|Port|
+|-------|----|
+|Backend|5000|
+
 ---
 
-## 🛠️ Setup Instructions
+## Setup Instructions
 
 ### Prerequisites
 
-- Python 3.x
-- [Ollama](https://ollama.com) installed
+- Python3 installed
+- [Ollama](https://ollama.com/install.sh) installed
 - FFmpeg installed
-- `Mjh1051702/youtube:latest` model pulled via Ollama
 
 ### 2. Setup a Python Virtual Environment
 
@@ -30,26 +33,21 @@ pip install -r requirements.txt
 
 **Note**: On first run, `faster-whisper` will download the Whisper model (~140MB for 'base' model). This is a one-time download and cached locally.
 
-### 4. Pull the required LLM Model from OLLAMA
+### 4. Pull the required LLM Model from Ollama
 
 ```bash
 ollama pull Mjh1051702/youtube:latest
 ```
 
-### 5. Run the Application
+### 5. Start the Backend (Debug Mode)
 
 ```bash
-python backend/backendFileUpload.py
+export FLASK_APP="backend/server.py"
+flask run --debug
 ```
 
-### 6. Open `index.html` in your browser.
+### 6. Go to the Webpage
 
-### 7. Deployment
-
-For deployment, you can use free tiers of:
-
-- **Railway** - 500 hours/month free
-- **Render** - Free tier available
-- **Fly.io** - Free allowance for small apps
-
-Note: Ollama needs to be installed on the deployment server.
+```bash
+Open index.html in your browser
+```
