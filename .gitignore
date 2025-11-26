@@ -7,3 +7,9 @@
 
 # But keep backendUpload.py
 !/backend/backendFileUpload.py
+
+# Virtual Environment
+/venv
+
+#Pycache
+__pycache__/

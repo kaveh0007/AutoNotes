@@ -1,6 +1,8 @@
 # AutoNotes
 
-**AutoNotes** is a local AI-powered note-taking tool that generates summaries from YouTube videos and local media files.
+**AutoNotes** is a cross-platform AI-powered note-taking tool that generates summaries from YouTube videos and local media files.
+
+Feat: No API keys needed.
 
 ---
 
@@ -11,25 +13,43 @@
 - Python 3.x
 - [Ollama](https://ollama.com) installed
 - FFmpeg installed
-- Whisper installed(MLX_Whisper for Apple Silicon)
 - `Mjh1051702/youtube:latest` model pulled via Ollama
 
-### 1. Clone the Repository
+### 2. Setup a Python Virtual Environment
 
 ```bash
-git clone https://github.com/divyanshuchander/AutoNotes.git
-cd AutoNotes
+python3 -m venv <envName>
+source ./<envName>/bin/activate
 ```
 
-### 2. Setup a Python Environment & install the dependencies
+### 3. Install the dependencies
 
 ```bash
-pip -m venv <virtual env name>
-source ./<envName>/bin/activate
 pip install -r requirements.txt
 ```
-### 3. Install Ollama and pull required LLM Model
+
+**Note**: On first run, `faster-whisper` will download the Whisper model (~140MB for 'base' model). This is a one-time download and cached locally.
+
+### 4. Pull the required LLM Model from OLLAMA
 
 ```bash
-ollama pull Mjh1051702/youtube:latest(Model Name)
+ollama pull Mjh1051702/youtube:latest
 ```
+
+### 5. Run the Application
+
+```bash
+python backend/backendFileUpload.py
+```
+
+### 6. Open `index.html` in your browser.
+
+### 7. Deployment
+
+For deployment, you can use free tiers of:
+
+- **Railway** - 500 hours/month free
+- **Render** - Free tier available
+- **Fly.io** - Free allowance for small apps
+
+Note: Ollama needs to be installed on the deployment server.
