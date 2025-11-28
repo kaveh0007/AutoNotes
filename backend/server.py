@@ -64,7 +64,7 @@ def transcribe_audio_with_whisper(file_path):
 def summaryGenerationModel(transcript):
     """Generate summary from transcript using LLM"""
     contents = (
-        "Summarise the Video by the Following transcript and list key points of the video in detail:  "
+        "Summarise the Video by the Following transcript and list key points of the video in detail, the first line of the summary should be, 'This video is about: ':  "
         + str(transcript)
     )
 

@@ -537,3 +537,120 @@ body {
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2),
     0 8px 24px rgba(17, 24, 39, 0.5);
 }
+
+/* Editing Interface Styles */
+.editor-container {
+  margin-top: 20px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.formatting-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 15px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.format-btn {
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+}
+
+.format-btn:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.4);
+  transform: translateY(-1px);
+}
+
+.format-btn:active {
+  background: rgba(59, 130, 246, 0.3);
+  transform: translateY(0);
+}
+
+.editable-text {
+  min-height: 300px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: white;
+  font-size: 16px;
+  line-height: 1.6;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.editable-text:focus {
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.editable-text h3 {
+  color: #3b82f6;
+  margin: 15px 0 10px 0;
+  font-weight: 600;
+}
+
+.editable-text h4 {
+  color: #8b5cf6;
+  margin: 12px 0 8px 0;
+  font-weight: 500;
+}
+
+.editable-text strong {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+.editable-text em {
+  color: #34d399;
+  font-style: italic;
+}
+
+.editable-text u {
+  color: #f472b6;
+  text-decoration: underline;
+}
+
+.toolbar-separator {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 6px 8px;
+}
+
+.editor-controls {
+  display: flex;
+  gap: 12px;
+  margin-top: 15px;
+  justify-content: flex-end;
+}
+
+.control-btn.primary {
+  background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+  color: white;
+  border: none;
+}
+
+.control-btn.primary:hover {
+  background: linear-gradient(45deg, #1d4ed8, #1e40af);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+}

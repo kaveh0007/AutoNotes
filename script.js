@@ -47,6 +47,7 @@ document.querySelector("form").addEventListener("submit", async function (e) {
         title: await fetchVideoTitle(videoId),
         sourceUrl: videoUrl,
         transcript: transcript,
+        formattedContent: formatStructuredSummary(transcript),
         timestamp: new Date().toISOString(),
       })
 
@@ -71,6 +72,7 @@ document.querySelector("form").addEventListener("submit", async function (e) {
         title: selectedFile.name,
         sourceUrl: null,
         transcript: transcript,
+        formattedContent: formatStructuredSummary(transcript),
         timestamp: new Date().toISOString(),
       })
 
@@ -313,9 +315,29 @@ function displayTranscript(source, transcript, sourceType) {
             <button id="copyBtn" class="control-btn"><i class="fas fa-copy"></i> Copy</button>
             <button id="downloadBtn" class="control-btn"><i class="fas fa-download"></i> Download</button>
             <button id="viewRecentBtn" class="control-btn"><i class="fas fa-history"></i> View Recent</button>
+            <button id="editToggleBtn" class="control-btn"><i class="fas fa-edit"></i> Edit</button>
         </div>
-        <div class="summary-content">
+        <div class="summary-content" id="summaryDisplay" style="text-align: left;">
             ${formatStructuredSummary(transcript)}
+        </div>
+        <div class="editor-container" id="editorContainer" style="display: none;">
+            <div class="formatting-toolbar">
+                <button type="button" class="format-btn" data-format="bold"><i class="fas fa-bold"></i></button>
+                <button type="button" class="format-btn" data-format="italic"><i class="fas fa-italic"></i></button>
+                <button type="button" class="format-btn" data-format="underline"><i class="fas fa-underline"></i></button>
+                <button type="button" class="format-btn" data-format="heading"><i class="fas fa-heading"></i></button>
+                <div class="toolbar-separator"></div>
+                <button type="button" class="format-btn" data-format="alignLeft"><i class="fas fa-align-left"></i></button>
+                <button type="button" class="format-btn" data-format="alignCenter"><i class="fas fa-align-center"></i></button>
+                <button type="button" class="format-btn" data-format="alignRight"><i class="fas fa-align-right"></i></button>
+            </div>
+            <div id="editableArea" class="editable-text" contenteditable="true">${formatStructuredSummary(
+              transcript
+            )}</div>
+            <div class="editor-controls">
+                <button id="saveEditsBtn" class="control-btn primary"><i class="fas fa-save"></i> Save</button>
+                <button id="cancelEditsBtn" class="control-btn"><i class="fas fa-times"></i> Cancel</button>
+            </div>
         </div>
     `
 
@@ -329,8 +351,8 @@ function displayTranscript(source, transcript, sourceType) {
   })
 
   document.getElementById("downloadBtn").addEventListener("click", () => {
-    downloadSummary(
-      transcript,
+    downloadSummaryAsPDF(
+      formatStructuredSummary(transcript),
       sourceType === "youtube" ? source : "media-summary"
     )
   })
@@ -339,6 +361,9 @@ function displayTranscript(source, transcript, sourceType) {
   document.getElementById("viewRecentBtn").addEventListener("click", () => {
     window.location.href = "./recent.html"
   })
+
+  // Add editing functionality
+  setupEditingControls(transcript)
 
   // Scroll to results
   resultsContainer.scrollIntoView({ behavior: "smooth" })
@@ -371,18 +396,80 @@ function copyToClipboard(text) {
     })
 }
 
-// Download summary as text file
-function downloadSummary(text, filename) {
-  const element = document.createElement("a")
-  element.setAttribute(
-    "href",
-    "data:text/plain;charset=utf-8," + encodeURIComponent(text)
+// Download summary as PDF file
+function downloadSummaryAsPDF(htmlContent, filename) {
+  // Create a new window for PDF generation
+  const printWindow = window.open("", "", "height=600,width=800")
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>${filename}</title>
+        <style>
+            body { 
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                line-height: 1.6; 
+                color: #333; 
+                max-width: 800px; 
+                margin: 0 auto; 
+                padding: 20px;
+                background: white;
+            }
+            h1, h2, h3 { 
+                color: #2563eb; 
+                margin-top: 1.5em;
+                margin-bottom: 0.5em;
+            }
+            h1 { font-size: 24px; border-bottom: 2px solid #2563eb; padding-bottom: 10px; }
+            h2 { font-size: 20px; }
+            h3 { font-size: 18px; }
+            h4 { font-size: 16px; color: #7c3aed; }
+            p { margin: 10px 0; }
+            strong { color: #dc2626; font-weight: 600; }
+            em { color: #059669; }
+            ul { margin: 10px 0; padding-left: 20px; }
+            li { margin: 5px 0; }
+            .header { text-align: center; margin-bottom: 30px; }
+            .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280; text-align: center; }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>AutoNotes Summary</h1>
+            <p style="color: #6b7280;">Generated on ${new Date().toLocaleDateString()}</p>
+        </div>
+        ${htmlContent}
+        <div class="footer">
+            <p>Generated by AutoNotes - AI-Powered Video Summarization Tool</p>
+        </div>
+    </body>
+    </html>
+  `)
+
+  printWindow.document.close()
+
+  // Wait for content to load, then print as PDF
+  printWindow.onload = function () {
+    setTimeout(() => {
+      printWindow.print()
+      printWindow.close()
+    }, 250)
+  }
+}
+
+// Update localStorage with edited content
+function updateEditedContentInStorage(editedHtmlContent) {
+  const recentItems = JSON.parse(
+    localStorage.getItem("autonotes_recent") || "[]"
   )
-  element.setAttribute("download", `${filename}-summary.txt`)
-  element.style.display = "none"
-  document.body.appendChild(element)
-  element.click()
-  document.body.removeChild(element)
+
+  if (recentItems.length > 0) {
+    // Update the most recent item with edited content
+    recentItems[0].editedContent = editedHtmlContent
+    recentItems[0].lastEdited = new Date().toISOString()
+    localStorage.setItem("autonotes_recent", JSON.stringify(recentItems))
+  }
 }
 
 // Show notification
@@ -459,4 +546,104 @@ function formatStructuredSummary(text) {
     "</p>"
 
   return formatted
+}
+
+// Setup editing controls functionality
+function setupEditingControls(originalTranscript) {
+  const editToggleBtn = document.getElementById("editToggleBtn")
+  const editorContainer = document.getElementById("editorContainer")
+  const summaryDisplay = document.getElementById("summaryDisplay")
+  const editableArea = document.getElementById("editableArea")
+  const saveEditsBtn = document.getElementById("saveEditsBtn")
+  const cancelEditsBtn = document.getElementById("cancelEditsBtn")
+  const formatBtns = document.querySelectorAll(".format-btn")
+
+  let isEditing = false
+
+  // Toggle between view and edit mode
+  editToggleBtn.addEventListener("click", () => {
+    isEditing = !isEditing
+
+    if (isEditing) {
+      summaryDisplay.style.display = "none"
+      editorContainer.style.display = "block"
+      editToggleBtn.innerHTML = '<i class="fas fa-eye"></i> View'
+      editableArea.innerHTML = summaryDisplay.innerHTML
+      editableArea.focus()
+    } else {
+      summaryDisplay.style.display = "block"
+      editorContainer.style.display = "none"
+      editToggleBtn.innerHTML = '<i class="fas fa-edit"></i> Edit'
+    }
+  })
+
+  // Format button functionality
+  formatBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const format = btn.dataset.format
+      editableArea.focus()
+
+      switch (format) {
+        case "bold":
+          document.execCommand("bold", false, null)
+          break
+        case "italic":
+          document.execCommand("italic", false, null)
+          break
+        case "underline":
+          document.execCommand("underline", false, null)
+          break
+        case "heading":
+          document.execCommand("formatBlock", false, "h3")
+          break
+        case "alignLeft":
+          document.execCommand("justifyLeft", false, null)
+          break
+        case "alignCenter":
+          document.execCommand("justifyCenter", false, null)
+          break
+        case "alignRight":
+          document.execCommand("justifyRight", false, null)
+          break
+      }
+    })
+  })
+
+  // Save edits
+  saveEditsBtn.addEventListener("click", () => {
+    const editedContent = editableArea.innerHTML
+    summaryDisplay.innerHTML = editedContent
+
+    // Update localStorage with edited content to persist in recents
+    updateEditedContentInStorage(editedContent)
+
+    // Update copy and download to use edited content
+    document.getElementById("copyBtn").onclick = () => {
+      copyToClipboard(editableArea.innerText)
+    }
+
+    document.getElementById("downloadBtn").onclick = () => {
+      downloadSummaryAsPDF(editedContent, "edited-summary")
+    }
+
+    // Switch back to view mode
+    isEditing = false
+    summaryDisplay.style.display = "block"
+    editorContainer.style.display = "none"
+    editToggleBtn.innerHTML = '<i class="fas fa-edit"></i> Edit'
+
+    showNotification("Changes saved successfully!")
+  })
+
+  // Cancel edits
+  cancelEditsBtn.addEventListener("click", () => {
+    // Reset to original content
+    editableArea.innerHTML = summaryDisplay.innerHTML
+
+    // Switch back to view mode
+    isEditing = false
+    summaryDisplay.style.display = "block"
+    editorContainer.style.display = "none"
+    editToggleBtn.innerHTML = '<i class="fas fa-edit"></i> Edit'
+  })
 }
