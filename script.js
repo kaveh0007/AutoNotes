@@ -409,6 +409,11 @@ function formatStructuredSummary(text) {
     .replace(/## (.*?)(?:\r\n|\r|\n|$)/g, "<h3>$1</h3>")
     .replace(/### (.*?)(?:\r\n|\r|\n|$)/g, "<h4>$1</h4>")
 
+  // Convert markdown bold and italic
+  formatted = formatted
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // **bold**
+    .replace(/\*(.*?)\*/g, "<em>$1</em>") // *italic*
+
   // Format timestamps
   formatted = formatted.replace(
     /\[(.*?)\]/g,

@@ -51,3 +51,5 @@ flask run --debug
 ```bash
 Open index.html in your browser
 ```
+
+**Note**: I highly recommend trying this MVP with videos in the English Language specifically! (Subsequent releases will ensure support for other languages)
