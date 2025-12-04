@@ -1,9 +1,9 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from youtube_transcript_api import YouTubeTranscriptApi
-import ollama  # Local Summarisation Model
-from faster_whisper import WhisperModel  # Free, local Audio to Text Model
-import ffmpeg  # Media to Audio Conversion
+import ollama
+from faster_whisper import WhisperModel
+import ffmpeg
 import os
 import tempfile
 import uuid
@@ -64,7 +64,24 @@ def transcribe_audio_with_whisper(file_path):
 def summaryGenerationModel(transcript):
     """Generate summary from transcript using LLM"""
     contents = (
-        "Summarise the Video by the Following transcript and list key points of the video in detail, avoid using lines such as 'This transcript talks about' etc. We are not supposed to let the end user know this summary was generated from a transcript"
+        """"You are an expert content summarizer. Based on the content provided, produce a clear, well-structured summary that reads naturally and does not mention transcripts, sources, subtitles, or how the text was obtained. 
+
+        Your response must:
+        1) Present the summary as if you watched and understood the original video directly.
+        2) Avoid phrases like "the transcript says," "the text discusses," or "the provided content."
+        3) Use natural language as if describing the original material.
+        4) Include a robust end-to-end summary covering everything from the video.
+        5) Capture context, intent, arguments, examples, and important insights.
+        6) Rewrite unclear or fragmented speech into clean, coherent prose.
+        7) Ignore filler words and transcription noise.
+        8) If the content feels conversational or fragmented, convert it into polished, reader-friendly writing.
+        9) Use emphasis and formatting where you feel like.
+
+        OUTPUT
+        A clear, detailed well written explanation that covers the full content.
+
+        Do not mention transcripts, text processing, AI, or summarization steps. Produce the output as if you are summarizing a video you fully understood.
+"""
         + str(transcript)
     )
 
@@ -105,7 +122,6 @@ def youtubeSummary():
 
         # Try to get transcript in any available language
         try:
-            # Use the new API (v1.2+)
             api = YouTubeTranscriptApi()
             transcript_list = api.fetch(video_id)
             print(f"Successfully fetched transcript")
@@ -188,7 +204,3 @@ def localMediaSummary():
 @app.route("/health")
 def health():
     return "Backend is Running"
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=3000, debug=True)

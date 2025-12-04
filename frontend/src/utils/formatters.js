@@ -7,7 +7,6 @@ export const formatStructuredSummary = (text) => {
   // Convert markdown-style formatting to HTML
   formatted = formatted
     .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // **bold** to <strong>
-    .replace(/\*(.*?)\*/g, "<em>$1</em>") // *italic* to <em>
     .replace(/## (.*?)(?:\r\n|\r|\n|$)/g, "<h3>$1</h3>") // ## headings
     .replace(/### (.*?)(?:\r\n|\r|\n|$)/g, "<h4>$1</h4>") // ### subheadings
 
@@ -20,11 +19,16 @@ export const formatStructuredSummary = (text) => {
   // Convert line breaks to HTML breaks
   const lines = formatted.split(/\r\n|\r|\n/)
 
-  // Process bullet points
+  // Process bullet points (handle * bullets, • bullets, and - bullets)
   let inList = false
   for (let i = 0; i < lines.length; i++) {
-    if (lines[i].trim().startsWith("• ") || lines[i].trim().startsWith("- ")) {
-      lines[i] = "<li>" + lines[i].trim().substring(2) + "</li>"
+    const trimmedLine = lines[i].trim()
+    if (
+      trimmedLine.startsWith("* ") ||
+      trimmedLine.startsWith("• ") ||
+      trimmedLine.startsWith("- ")
+    ) {
+      lines[i] = "<li>" + trimmedLine.substring(2) + "</li>"
 
       // If not already in a list, add the opening <ul> tag
       if (!inList) {
@@ -44,6 +48,9 @@ export const formatStructuredSummary = (text) => {
   }
 
   formatted = lines.join("<br>")
+
+  // Now apply italic formatting after bullet processing to avoid conflicts
+  formatted = formatted.replace(/\*(.*?)\*/g, "<em>$1</em>") // *italic* to <em>
 
   // Add paragraph spacing for better readability
   formatted =
@@ -65,6 +72,6 @@ export const stripMarkdown = (text) => {
     .replace(/## (.*?)(?:\r\n|\r|\n|$)/g, "$1") // Remove ## headings
     .replace(/### (.*?)(?:\r\n|\r|\n|$)/g, "$1") // Remove ### headings
     .replace(/\[(.*?)\]/g, "$1") // Remove [timestamps]
-    .replace(/^\s*[\*\-\+]\s+/gm, "") // Remove bullet points
+    .replace(/^\s*[\*\-\+•]\s+/gm, "") // Remove bullet points (*, -, +, •)
     .replace(/^\s*\d+\.\s+/gm, "") // Remove numbered lists
 }
