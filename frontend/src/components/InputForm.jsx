@@ -140,55 +140,103 @@ const InputForm = ({ onSummaryGenerated, onLoadingChange }) => {
   }
 
   return (
-    <div className="input-container">
-      <div className="toggle-container">
-        <label className="toggle">
-          <input
-            type="radio"
-            name="input-type"
-            value="youtube"
-            checked={inputType === "youtube"}
-            onChange={(e) => setInputType(e.target.value)}
-          />
-          <span className="toggle-label">YouTube URL</span>
-        </label>
-        <label className="toggle">
-          <input
-            type="radio"
-            name="input-type"
-            value="local"
-            checked={inputType === "local"}
-            onChange={(e) => setInputType(e.target.value)}
-          />
-          <span className="toggle-label">Local Media</span>
-        </label>
+    <div className="input-card">
+      <div className="card-header">
+        <h3 className="card-title">Start Processing Content</h3>
+        <p className="card-description">
+          Choose your input method and let AI transform your content into
+          structured notes
+        </p>
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <div className="input-type-selector">
+        <div className="selector-buttons">
+          <button
+            type="button"
+            className={`selector-btn ${
+              inputType === "youtube" ? "active" : ""
+            }`}
+            onClick={() => setInputType("youtube")}
+          >
+            <i className="fab fa-youtube"></i>
+            <span>YouTube Video</span>
+          </button>
+          <button
+            type="button"
+            className={`selector-btn ${inputType === "local" ? "active" : ""}`}
+            onClick={() => setInputType("local")}
+          >
+            <i className="fas fa-upload"></i>
+            <span>Upload Video File</span>
+          </button>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="input-form">
         {inputType === "youtube" ? (
-          <div id="youtubeInputSection">
+          <div className="form-group">
+            <label className="form-label">YouTube URL</label>
             <input
               type="url"
-              className="url-input"
-              placeholder="Paste YouTube URL here..."
+              className="form-input"
+              placeholder=""
               value={youtubeUrl}
               onChange={(e) => setYoutubeUrl(e.target.value)}
+              required
             />
+            <div className="input-hint">
+              Supports YouTube videos, shorts, and embedded links
+            </div>
           </div>
         ) : (
-          <div id="localFileSection">
+          <div className="form-group">
+            <label className="form-label">Upload Media File</label>
+            {!selectedFile ? (
+              <div
+                className="file-upload-zone"
+                onClick={() => document.getElementById("file-input").click()}
+              >
+                <div className="file-upload-icon">
+                  <i className="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div className="file-upload-text">
+                  Click to upload or drag and drop
+                </div>
+                <div className="file-upload-hint">
+                  Supports MP4, MP3, WAV, and other media formats
+                </div>
+              </div>
+            ) : (
+              <div className="file-selected">
+                <div className="file-info">
+                  <i className="fas fa-file-video"></i>
+                  <span className="file-name">{selectedFile.name}</span>
+                  <button
+                    type="button"
+                    className="file-remove"
+                    onClick={() => setSelectedFile(null)}
+                  >
+                    <i className="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+            )}
             <input
+              id="file-input"
               type="file"
-              className="file-input"
+              style={{ display: "none" }}
               accept="video/*,audio/*"
               onChange={(e) => setSelectedFile(e.target.files[0])}
             />
           </div>
         )}
 
-        <button type="submit" className="analyze-btn">
-          <i className="fas fa-magic"></i> Generate Summary
-        </button>
+        <div className="form-actions">
+          <button type="submit" className="btn btn-primary btn-md">
+            <i className="fas fa-magic"></i>
+            Generate Summary
+          </button>
+        </div>
       </form>
     </div>
   )

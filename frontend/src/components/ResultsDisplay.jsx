@@ -105,129 +105,172 @@ const ResultsDisplay = ({ data, loading }) => {
 
   return (
     <div className="results-container">
-      {/* Video/Media Display */}
-      <div className="video-container">
-        {sourceType === "youtube" ? (
-          <iframe
-            width="560"
-            height="315"
-            src={`https://www.youtube.com/embed/${data.id}?si=randomstring&amp;controls=0`}
-            title="YouTube video player"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allowFullScreen
-          ></iframe>
-        ) : (
-          <video className="local-video" controls>
-            <source src={source} type={getMediaType(source)} />
-            Your browser does not support the video tag.
-          </video>
-        )}
+      {/* Media Display Section */}
+      <div className="media-section">
+        <div className="media-wrapper">
+          {sourceType === "youtube" ? (
+            <div className="video-embed">
+              <iframe
+                src={`https://www.youtube.com/embed/${data.id}?si=randomstring&amp;controls=0`}
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              ></iframe>
+            </div>
+          ) : (
+            <div className="local-media">
+              <video className="local-video" controls>
+                <source src={source} type={getMediaType(source)} />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Summary Display */}
-      <div className="summary-output">
-        <h2>Generated Summary</h2>
-        <div className="summary-controls">
-          <button onClick={handleCopy} className="control-btn">
-            <i className="fas fa-copy"></i> Copy
-          </button>
-          <button onClick={handleDownload} className="control-btn">
-            <i className="fas fa-download"></i> Download
-          </button>
-          <button
-            onClick={() => (window.location.href = "/recent")}
-            className="control-btn"
-          >
-            <i className="fas fa-history"></i> View Recent
-          </button>
-          <button onClick={handleEditToggle} className="control-btn">
-            <i className={`fas ${isEditing ? "fa-eye" : "fa-edit"}`}></i>
-            {isEditing ? "View" : "Edit"}
-          </button>
+      {/* Summary Section */}
+      <div className="summary-section">
+        <div className="summary-header">
+          <h2 className="summary-title">
+            <i className="fas fa-file-alt"></i>
+            Generated Summary
+          </h2>
+
+          <div className="summary-actions">
+            <button
+              onClick={handleCopy}
+              className="action-btn action-btn-secondary"
+            >
+              <i className="fas fa-copy"></i>
+              Copy
+            </button>
+            <button
+              onClick={handleDownload}
+              className="action-btn action-btn-secondary"
+            >
+              <i className="fas fa-download"></i>
+              Download
+            </button>
+            <button
+              onClick={handleEditToggle}
+              className="action-btn action-btn-primary"
+            >
+              <i className={`fas ${isEditing ? "fa-eye" : "fa-edit"}`}></i>
+              {isEditing ? "View" : "Edit"}
+            </button>
+          </div>
         </div>
 
-        {!isEditing ? (
-          <div className="summary-content" style={{ textAlign: "left" }}>
-            <div
-              dangerouslySetInnerHTML={{
-                __html: editedContent || formattedContent,
-              }}
-            />
-          </div>
-        ) : (
-          <div className="editor-container">
-            <div className="formatting-toolbar">
-              <button
-                type="button"
-                className="format-btn"
-                onClick={() => handleFormat("bold")}
-              >
-                <i className="fas fa-bold"></i>
-              </button>
-              <button
-                type="button"
-                className="format-btn"
-                onClick={() => handleFormat("italic")}
-              >
-                <i className="fas fa-italic"></i>
-              </button>
-              <button
-                type="button"
-                className="format-btn"
-                onClick={() => handleFormat("underline")}
-              >
-                <i className="fas fa-underline"></i>
-              </button>
-              <button
-                type="button"
-                className="format-btn"
-                onClick={() => handleFormat("heading")}
-              >
-                <i className="fas fa-heading"></i>
-              </button>
-              <div className="toolbar-separator"></div>
-              <button
-                type="button"
-                className="format-btn"
-                onClick={() => handleFormat("alignLeft")}
-              >
-                <i className="fas fa-align-left"></i>
-              </button>
-              <button
-                type="button"
-                className="format-btn"
-                onClick={() => handleFormat("alignCenter")}
-              >
-                <i className="fas fa-align-center"></i>
-              </button>
-              <button
-                type="button"
-                className="format-btn"
-                onClick={() => handleFormat("alignRight")}
-              >
-                <i className="fas fa-align-right"></i>
-              </button>
+        <div className="summary-content-wrapper">
+          {!isEditing ? (
+            <div className="summary-content">
+              <div
+                className="formatted-summary"
+                dangerouslySetInnerHTML={{
+                  __html: editedContent || formattedContent,
+                }}
+              />
             </div>
-            <div
-              ref={editableRef}
-              className="editable-text"
-              contentEditable="true"
-              dangerouslySetInnerHTML={{
-                __html: editedContent || formattedContent,
-              }}
-            />
-            <div className="editor-controls">
-              <button onClick={handleSave} className="control-btn primary">
-                <i className="fas fa-save"></i> Save
-              </button>
-              <button onClick={handleCancel} className="control-btn">
-                <i className="fas fa-times"></i> Cancel
-              </button>
+          ) : (
+            <div className="editor-section">
+              <div className="formatting-toolbar">
+                <div className="toolbar-group">
+                  <button
+                    type="button"
+                    className="format-btn"
+                    onClick={() => handleFormat("bold")}
+                    title="Bold"
+                  >
+                    <i className="fas fa-bold"></i>
+                  </button>
+                  <button
+                    type="button"
+                    className="format-btn"
+                    onClick={() => handleFormat("italic")}
+                    title="Italic"
+                  >
+                    <i className="fas fa-italic"></i>
+                  </button>
+                  <button
+                    type="button"
+                    className="format-btn"
+                    onClick={() => handleFormat("underline")}
+                    title="Underline"
+                  >
+                    <i className="fas fa-underline"></i>
+                  </button>
+                  <button
+                    type="button"
+                    className="format-btn"
+                    onClick={() => handleFormat("heading")}
+                    title="Heading"
+                  >
+                    <i className="fas fa-heading"></i>
+                  </button>
+                </div>
+
+                <div className="toolbar-separator"></div>
+
+                <div className="toolbar-group">
+                  <button
+                    type="button"
+                    className="format-btn"
+                    onClick={() => handleFormat("alignLeft")}
+                    title="Align Left"
+                  >
+                    <i className="fas fa-align-left"></i>
+                  </button>
+                  <button
+                    type="button"
+                    className="format-btn"
+                    onClick={() => handleFormat("alignCenter")}
+                    title="Align Center"
+                  >
+                    <i className="fas fa-align-center"></i>
+                  </button>
+                  <button
+                    type="button"
+                    className="format-btn"
+                    onClick={() => handleFormat("alignRight")}
+                    title="Align Right"
+                  >
+                    <i className="fas fa-align-right"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div className="editor-content">
+                <div
+                  ref={editableRef}
+                  className="editable-text"
+                  contentEditable="true"
+                  dangerouslySetInnerHTML={{
+                    __html: editedContent || formattedContent,
+                  }}
+                />
+              </div>
+
+              <div className="editor-actions">
+                <button
+                  onClick={handleSave}
+                  className="action-btn action-btn-primary"
+                >
+                  <i className="fas fa-save"></i>
+                  Save Changes
+                </button>
+                <button
+                  onClick={handleCancel}
+                  className="action-btn action-btn-secondary"
+                >
+                  <i className="fas fa-times"></i>
+                  Cancel
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   )

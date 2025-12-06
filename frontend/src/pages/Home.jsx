@@ -17,20 +17,59 @@ const Home = () => {
   }
 
   return (
-    <main className="main-container">
-      <h1 className="hero-heading">
-        Notes? <br /> AutoNotes.
-      </h1>
+    <div className="app-container">
+      <main className="main-content">
+        {/* Hero Section */}
+        <section className="hero-section">
+          <div className="container">
+            <h1 className="hero-heading">
+              Transform Videos Into{" "}
+              <span className="hero-heading-primary">Intelligent Notes</span>
+            </h1>
 
-      <InputForm
-        onSummaryGenerated={handleSummaryGenerated}
-        onLoadingChange={handleLoadingChange}
-      />
+            <p className="hero-subtitle">
+              Convert tedious videos into structured summaries!
+              <span className="hero-highlight">
+                {" "}
+                Learn Faster, Retain Better.
+              </span>
+            </p>
+          </div>
+        </section>
 
-      {summaryData && <ResultsDisplay data={summaryData} loading={loading} />}
+        {/* Input Section */}
+        <section className="input-section">
+          <div className="container">
+            <InputForm
+              onSummaryGenerated={handleSummaryGenerated}
+              onLoadingChange={handleLoadingChange}
+            />
+          </div>
+        </section>
 
-      <Features />
-    </main>
+        {/* Results Section */}
+        {summaryData && (
+          <section className="results-section">
+            <div className="container">
+              <ResultsDisplay data={summaryData} loading={loading} />
+            </div>
+          </section>
+        )}
+
+        {/* Features Section */}
+        <section className="features-section">
+          <div className="container">
+            <div className="section-header">
+              <h2 className="section-title">Powerful Features</h2>
+              <p className="section-subtitle">
+                Consume & Grasp videos like never before, completely local, completely offline.
+              </p>
+            </div>
+            <Features />
+          </div>
+        </section>
+      </main>
+    </div>
   )
 }
 

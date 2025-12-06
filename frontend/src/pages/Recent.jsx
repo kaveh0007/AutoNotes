@@ -51,7 +51,7 @@ const Recent = () => {
   }
 
   const showNotification = (message, isError = false) => {
-    // Create notification element
+    // Create notification
     const notification = document.createElement("div")
     notification.className = `notification${isError ? " error" : ""}`
     notification.textContent = message
@@ -81,181 +81,214 @@ const Recent = () => {
 
   if (summaries.length === 0) {
     return (
-      <main className="main-container recent-page">
-        <h1 className="hero-heading">Recent Summaries</h1>{" "}
-        <Link to="/" className="back-btn">
-          <i className="fas fa-arrow-left"></i> Back to Home
-        </Link>
-        <div className="recent-summaries">
-          <div className="no-summaries">
-            <i
-              className="fas fa-folder-open"
-              style={{ fontSize: "3rem", marginBottom: "1rem" }}
-            ></i>
-            <h3>No summaries yet</h3>
-            <p>Generate some summaries on the home page to see them here.</p>
-          </div>
-        </div>
-      </main>
+      <div className="app-container">
+        <main className="main-content">
+          <section className="hero-section">
+            <div className="container">
+              <h1 className="hero-heading">Recent Summaries</h1>
+              <Link to="/" className="back-btn">
+                <i className="fas fa-arrow-left"></i> Back to Home
+              </Link>
+              <div className="recent-summaries">
+                <div className="no-summaries">
+                  <i
+                    className="fas fa-folder-open"
+                    style={{ fontSize: "3rem", marginBottom: "1rem" }}
+                  ></i>
+                  <h3>No summaries yet</h3>
+                  <p>
+                    Generate some summaries on the home page to see them here.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
     )
   }
 
   return (
-    <main className="main-container recent-page">
-      <h1 className="hero-heading">Recent Summaries</h1>
+    <div className="app-container">
+      <main className="main-content">
+        <section className="section">
+          <div className="container">
+            <h1 className="hero-heading">Recent Summaries</h1>
 
-      <Link to="/" className="back-btn">
-        <i className="fas fa-arrow-left"></i> Back to Home
-      </Link>
+            <Link to="/" className="back-btn">
+              <i className="fas fa-arrow-left"></i> Back to Home
+            </Link>
 
-      <div className="recent-summaries">
-        {summaries.map((summary, index) => {
-          const previewText =
-            stripMarkdown(summary.transcript).substring(0, 150) + "..."
+            <div className="recent-summaries">
+              {summaries.map((summary, index) => {
+                const previewText =
+                  stripMarkdown(summary.transcript).substring(0, 300) + "..."
 
-          return (
-            <div key={summary.id} className="summary-card">
-              {summary.type === "youtube" && summary.sourceUrl ? (
-                <h3 className="summary-title">
-                  <a
-                    href={summary.sourceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: "inherit", textDecoration: "none" }}
-                  >
-                    YouTube Video
-                  </a>
-                </h3>
-              ) : (
-                <h3 className="summary-title">{summary.title}</h3>
-              )}
+                return (
+                  <div key={summary.id} className="recent-item">
+                    {/* Summary card - no media preview in list */}
+                    <div className="summary-section">
+                      <div className="summary-header">
+                        <h3 className="summary-title">
+                          {summary.type === "youtube" ? (
+                            <a
+                              href={summary.sourceUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                color: "inherit",
+                                textDecoration: "none",
+                              }}
+                            >
+                              YouTube Video
+                            </a>
+                          ) : (
+                            summary.title
+                          )}
+                        </h3>
 
-              <div className="summary-date">
-                {formatDate(summary.timestamp)}
-              </div>
-              <div className="summary-preview">{previewText}</div>
+                        <div className="summary-actions">
+                          <div
+                            className="summary-date"
+                            style={{
+                              marginRight: "1rem",
+                              color: "var(--color-text-secondary)",
+                              fontSize: "0.95rem",
+                            }}
+                          >
+                            {formatDate(summary.timestamp)}
+                          </div>
+                          <button
+                            className="action-btn"
+                            onClick={() => handleView(index)}
+                          >
+                            <i className="fas fa-eye"></i> View
+                          </button>
+                          <button
+                            className="action-btn"
+                            onClick={() => handleCopy(index)}
+                          >
+                            <i className="fas fa-copy"></i> Copy
+                          </button>
+                          <button
+                            className="action-btn"
+                            onClick={() => handleDownload(index)}
+                          >
+                            <i className="fas fa-download"></i> Download
+                          </button>
+                          <button
+                            className="action-btn"
+                            onClick={() => handleDelete(index)}
+                          >
+                            <i className="fas fa-trash"></i> Delete
+                          </button>
+                        </div>
+                      </div>
 
-              <div className="summary-actions">
-                <button
-                  className="action-btn view-btn"
-                  onClick={() => handleView(index)}
-                >
-                  <i className="fas fa-eye"></i> View
-                </button>
-                <button
-                  className="action-btn copy-btn"
-                  onClick={() => handleCopy(index)}
-                >
-                  <i className="fas fa-copy"></i> Copy
-                </button>
-                <button
-                  className="action-btn download-btn"
-                  onClick={() => handleDownload(index)}
-                >
-                  <i className="fas fa-download"></i> Download
-                </button>
-                <button
-                  className="action-btn delete-btn"
-                  onClick={() => handleDelete(index)}
-                >
-                  <i className="fas fa-trash"></i> Delete
-                </button>
-              </div>
+                      <div className="summary-content-wrapper">
+                        <div
+                          className="formatted-summary"
+                          dangerouslySetInnerHTML={{
+                            __html: formatStructuredSummary(previewText),
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
-          )
-        })}
-      </div>
 
-      {/* Summary Modal */}
-      {showModal && selectedSummary && (
-        <div
-          className="summary-modal"
-          style={{ display: "flex" }}
-          onClick={(e) =>
-            e.target.classList.contains("summary-modal") && closeModal()
-          }
-        >
-          <div className="modal-content">
-            <button className="close-modal" onClick={closeModal}>
-              <i className="fas fa-times"></i>
-            </button>
+            {/* Summary Modal */}
+            {showModal && selectedSummary && (
+              <div
+                className="summary-modal"
+                style={{ display: "flex" }}
+                onClick={(e) =>
+                  e.target.classList.contains("summary-modal") && closeModal()
+                }
+              >
+                <div className="modal-content">
+                  <button className="close-modal" onClick={closeModal}>
+                    <i className="fas fa-times"></i>
+                  </button>
 
-            <h2 className="modal-title">
-              {selectedSummary.type === "youtube"
-                ? "YouTube Video"
-                : selectedSummary.title}
-            </h2>
-            <div className="modal-date">
-              {new Date(selectedSummary.timestamp).toLocaleString()}
-            </div>
+                  {/* Modal: show media then summary using Results styles */}
+                  {selectedSummary.type === "youtube" &&
+                    selectedSummary.sourceUrl && (
+                      <div
+                        className="media-section"
+                        style={{ marginTop: "var(--space-lg)" }}
+                      >
+                        <div className="media-wrapper">
+                          <div className="video-embed">
+                            <iframe
+                              src={(() => {
+                                try {
+                                  const url = new URL(selectedSummary.sourceUrl)
+                                  let vid = ""
+                                  if (url.hostname.includes("youtube.com")) {
+                                    vid = url.searchParams.get("v")
+                                  } else if (
+                                    url.hostname.includes("youtu.be")
+                                  ) {
+                                    vid = url.pathname.slice(1)
+                                  }
+                                  if (vid)
+                                    return `https://www.youtube.com/embed/${vid}`
+                                } catch (e) {
+                                  /* fallthrough */
+                                }
+                                return selectedSummary.sourceUrl
+                              })()}
+                              title={selectedSummary.title || "YouTube video"}
+                              frameBorder="0"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
-            {/* If this is a YouTube summary, embed the video iframe above the transcript */}
-            {selectedSummary.type === "youtube" &&
-              selectedSummary.sourceUrl && (
-                <div className="video-embed">
-                  <iframe
-                    width="100%"
-                    height="360"
-                    src={
-                      // Convert a regular watch URL or full URL into an embed URL when possible
-                      (function () {
-                        try {
-                          const url = new URL(selectedSummary.sourceUrl)
-                          let vid = ""
-                          if (url.hostname.includes("youtube.com")) {
-                            vid = url.searchParams.get("v")
-                          } else if (url.hostname.includes("youtu.be")) {
-                            vid = url.pathname.slice(1)
-                          }
-                          if (vid) return `https://www.youtube.com/embed/${vid}`
-                        } catch (e) {
-                          /* fallthrough */
-                        }
-                        return selectedSummary.sourceUrl
-                      })()
-                    }
-                    title="YouTube video player"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
+                  <div className="summary-section">
+                    <div className="summary-header">
+                      <h3 className="summary-title">
+                        {selectedSummary.type === "youtube"
+                          ? "YouTube Video"
+                          : selectedSummary.title}
+                      </h3>
+                      <div className="summary-actions">
+                        <div
+                          className="summary-date"
+                          style={{
+                            color: "var(--color-text-secondary)",
+                            fontSize: "0.95rem",
+                          }}
+                        >
+                          {new Date(selectedSummary.timestamp).toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="summary-content-wrapper">
+                      <div
+                        className="formatted-summary"
+                        dangerouslySetInnerHTML={{
+                          __html: formatStructuredSummary(
+                            selectedSummary.transcript
+                          ),
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
-              )}
-
-            <div
-              className="modal-content-text"
-              dangerouslySetInnerHTML={{
-                __html: formatStructuredSummary(selectedSummary.transcript),
-              }}
-            />
-
-            <div className="modal-actions">
-              <button
-                className="action-btn"
-                onClick={() => {
-                  copyToClipboard(selectedSummary.transcript)
-                  showNotification("Summary copied to clipboard!")
-                }}
-              >
-                <i className="fas fa-copy"></i> Copy
-              </button>
-              <button
-                className="action-btn"
-                onClick={() => {
-                  const contentToDownload =
-                    selectedSummary.editedContent ||
-                    selectedSummary.formattedContent ||
-                    selectedSummary.transcript
-                  downloadSummaryAsPDF(contentToDownload, selectedSummary.title)
-                }}
-              >
-                <i className="fas fa-download"></i> Download
-              </button>
-            </div>
+              </div>
+            )}
           </div>
-        </div>
-      )}
-    </main>
+        </section>
+      </main>
+    </div>
   )
 }
 
